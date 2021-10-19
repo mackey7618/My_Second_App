@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements
         InputStream inputStream;
         OutputStream outputStream;
         BluetoothSocket bluetoothSocket;
-        String command = "GET:TEMP";
+        String command = "hello";
 
         public void run(){
             byte[] incomingBuff = new byte[64];
@@ -158,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements
                 }
             }
             if(bluetoothDevice == null){
-                Log.d(TAG, "Nodevie found.");
+                Log.d(TAG, "No Device found.");
                 return;
             }
 
@@ -296,6 +296,8 @@ public class MainActivity extends AppCompatActivity implements
         int act = event.getActionMasked();
         if(act == MotionEvent.ACTION_DOWN || act == MotionEvent.ACTION_UP){
             buttonUpDown((Button) v, act);
+        } else {
+            Log.d(TAG, event.toString());
         }
         return false;
     }
@@ -304,6 +306,7 @@ public class MainActivity extends AppCompatActivity implements
         switch(b.getId()){
             case R.id.btUp:
                 if(act == MotionEvent.ACTION_DOWN){
+
                     setBtCommand(R_STATUS_U0);
                 } else if(act == MotionEvent.ACTION_UP){
                     setBtCommand(R_STATUS_00);
