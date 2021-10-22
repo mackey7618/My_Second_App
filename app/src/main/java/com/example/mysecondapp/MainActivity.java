@@ -9,7 +9,6 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -28,6 +27,15 @@ public class MainActivity extends AppCompatActivity implements
 
     static final String TAG = "BTTEST1";
     BluetoothAdapter bluetoothAdapter;
+
+    private static final int LOADER_NONE = 10;
+    private static final int LOADER_UP = 11;
+    private static final int LOADER_DOWN = 12;
+
+    private static final int WINCH_NONE = 20;
+    private static final int WINCH_UP = 21;
+    private static final int WINCH_DOWN = 22;
+
 
     //全部OFF
     private static final int R_STATUS_00 = 1;
@@ -48,8 +56,14 @@ public class MainActivity extends AppCompatActivity implements
     //荷台DOWN ウィンチDOWN
     private static final int R_STATUS_DD = 9;
 
+    private static int mLoaderStatus = LOADER_NONE;
+    private static int mWinchStatus = WINCH_NONE;
+    private static int mLoaderRemote = LOADER_NONE;
+    private static int mWinchRemote = WINCH_NONE;
+
+
     TextView btStatusTextView;
-    TextView tempTextView;
+    TextView messageTextView;
     TextView tvCommand;
 
     BTClientThread btClientThread;
@@ -69,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements
                 case Constants.MESSAGE_TEMP:
                     s = (String) msg.obj;
                     if (s != null) {
-                        tempTextView.setText(s);
+                        messageTextView.setText(s);
                     }
                     break;
             }
@@ -84,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements
 
         // Find Views
         btStatusTextView = (TextView) findViewById(R.id.btStatusTextView);
-        tempTextView = (TextView) findViewById(R.id.tempTextView);
+        messageTextView = (TextView) findViewById(R.id.messageTextView);
         tvCommand = (TextView)  findViewById(R.id.tvCommand);
 
 
@@ -101,8 +115,8 @@ public class MainActivity extends AppCompatActivity implements
         */
 
         if(savedInstanceState != null){
-            String temp = savedInstanceState.getString(Constants.STATE_TEMP);
-            tempTextView.setText(temp);
+            String temp = savedInstanceState.getString(Constants.BT_MESS);
+            messageTextView.setText(temp);
         }
 
         // Initialize Bluetooth
@@ -135,20 +149,31 @@ public class MainActivity extends AppCompatActivity implements
     protected void onSaveInstanceState(Bundle outState) {
         Log.d(TAG, "onSaveInstanceState");
         super.onSaveInstanceState(outState);
-        outState.putString(Constants.STATE_TEMP, tempTextView.getText().toString());
+        outState.putString(Constants.BT_MESS, messageTextView.getText().toString());
     }
 
     public class BTClientThread extends Thread {
         InputStream inputStream;
         OutputStream outputStream;
         BluetoothSocket bluetoothSocket;
-        String command = "hello";
+        BluetoothDevice bluetoothDevice;
+        private static final int COMMAND_0 = 48; //ASCII code "0"
+        private static final int COMMAND_1 = 49; //ASCII code "1"
+        private static final int COMMAND_2 = 50; //ASCII code "2"
+        private static final int COMMAND_3 = 51; //ASCII code "3"
+        private static final int COMMAND_4 = 52; //ASCII code "4"
+        private static final int COMMAND_5 = 53; //ASCII code "5"
+        private static final int COMMAND_6 = 54; //ASCII code "6"
+        private static final int COMMAND_7 = 55; //ASCII code "7"
+        private static final int COMMAND_8 = 56; //ASCII code "8"
+
 
         public void run(){
             byte[] incomingBuff = new byte[64];
+            int i, len;
+            byte[] output;
 
-
-            BluetoothDevice bluetoothDevice = null;
+            bluetoothDevice = null;
             Set<BluetoothDevice> devices = bluetoothAdapter.getBondedDevices();
             for(BluetoothDevice device : devices){
                 if(device.getName().equals(Constants.BT_DEVICE)){
@@ -190,11 +215,14 @@ public class MainActivity extends AppCompatActivity implements
 
                             //Integer iCommand = Integer.parseInt(tvCommand.toString());
                             //outputStream.write(iCommand);
-                            CharSequence tmp = tvCommand.getText();
-                            Log.d(TAG, "length: " + tmp.length());
-                            if(command != tmp) {
-                                //command = tmp.toString();
-                                outputStream.write(tmp.toString().getBytes());
+                            if(mLoaderStatus != mLoaderRemote) {
+                                sendCommand(mLoaderStatus);
+                                mLoaderRemote = mLoaderStatus;
+                            } else if(mWinchStatus != mWinchRemote){
+                                sendCommand(mWinchStatus);
+                                mWinchRemote = mWinchStatus;
+                            } else {
+                                sendCommand(0);
                             }
                             // Read Response
                             int incomingBytes = inputStream.read(incomingBuff);
@@ -227,9 +255,7 @@ public class MainActivity extends AppCompatActivity implements
                     Thread.sleep(3 * 1000);
 
                 }
-            } catch (InterruptedException e){
-                e.printStackTrace();
-            } catch (IOException e){
+            } catch (InterruptedException | IOException e){
                 e.printStackTrace();
             }
 
@@ -245,6 +271,41 @@ public class MainActivity extends AppCompatActivity implements
                     Constants.MESSAGE_BT,
                     "DISCONNECTED - Exit BTClientThread"
             ).sendToTarget();
+        }
+
+        private void sendCommand(int com) throws IOException {
+            try{
+                switch(com){
+                    case LOADER_NONE:
+                        outputStream.write(COMMAND_5);
+                        outputStream.write(COMMAND_6);
+                        break;
+                    case LOADER_UP:
+                        outputStream.write(COMMAND_1);
+                        outputStream.write(COMMAND_6);
+                        break;
+                    case LOADER_DOWN:
+                        outputStream.write(COMMAND_5);
+                        outputStream.write(COMMAND_2);
+                        break;
+                    case WINCH_NONE:
+                        outputStream.write(COMMAND_7);
+                        outputStream.write(COMMAND_8);
+                        break;
+                    case WINCH_UP:
+                        outputStream.write(COMMAND_3);
+                        outputStream.write(COMMAND_8);
+                        break;
+                    case WINCH_DOWN:
+                        outputStream.write(COMMAND_7);
+                        outputStream.write(COMMAND_4);
+                        break;
+                    default:
+                        outputStream.write(COMMAND_0);
+                }
+            }catch(IOException e){
+                Log.d(TAG, e.getMessage());
+            }
         }
     }
 
@@ -294,7 +355,9 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         int act = event.getActionMasked();
-        if(act == MotionEvent.ACTION_DOWN || act == MotionEvent.ACTION_UP){
+        if(act == MotionEvent.ACTION_DOWN
+                || act == MotionEvent.ACTION_UP){
+            Log.d(TAG, "buttonUpDown");
             buttonUpDown((Button) v, act);
         } else {
             Log.d(TAG, event.toString());
@@ -305,35 +368,63 @@ public class MainActivity extends AppCompatActivity implements
     private void buttonUpDown(Button b, int act){
         switch(b.getId()){
             case R.id.btUp:
+                Log.d(TAG, "btUp");
                 if(act == MotionEvent.ACTION_DOWN){
-
+                    if(mLoaderRemote != LOADER_UP){
+                        mLoaderStatus = LOADER_UP;
+                    }
                     setBtCommand(R_STATUS_U0);
                 } else if(act == MotionEvent.ACTION_UP){
+                    if(mLoaderRemote != LOADER_NONE){
+                        mLoaderStatus = LOADER_NONE;
+                    }
                     setBtCommand(R_STATUS_00);
                 }
                 break;
             case R.id.btDown:
                 if(act == MotionEvent.ACTION_DOWN){
+                    if(mLoaderRemote != LOADER_DOWN){
+                        mLoaderStatus = LOADER_DOWN;
+                    }
                     setBtCommand(R_STATUS_D0);
                 } else if (act == MotionEvent.ACTION_UP){
+                    if(mLoaderRemote != LOADER_NONE){
+                        mLoaderStatus = LOADER_NONE;
+                    }
                     setBtCommand(R_STATUS_00);
                 }
                 break;
             case R.id.btRollUp:
                 if(act == MotionEvent.ACTION_DOWN){
+                    if(mWinchRemote != WINCH_UP){
+                        mWinchStatus = WINCH_UP;
+                    }
                     setBtCommand(R_STATUS_0U);
                 } else if (act == MotionEvent.ACTION_UP){
+                    if(mWinchRemote != WINCH_NONE){
+                        mWinchStatus = WINCH_NONE;
+                    }
                     setBtCommand(R_STATUS_00);
                 }
                 break;
             case R.id.btRollDown:
                 if(act == MotionEvent.ACTION_DOWN){
+                    if(mWinchRemote != WINCH_DOWN){
+                        mWinchStatus = WINCH_DOWN;
+                    }
                     setBtCommand(R_STATUS_0D);
                 } else if (act == MotionEvent.ACTION_UP){
+                    if(mWinchRemote != WINCH_NONE){
+                        mWinchStatus = WINCH_NONE;
+                    }
                     setBtCommand(R_STATUS_00);
                 }
                 break;
         }
+    }
+
+    private void setLoaderCommand(int i){
+
     }
 
     private void setBtCommand(int i){
