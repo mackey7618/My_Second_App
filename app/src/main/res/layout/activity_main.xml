@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/back_ground"
     tools:context=".MainActivity">
 
     <EditText
@@ -12,6 +13,7 @@
         android:layout_height="48dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
+        android:background="@color/white"
         android:ems="12"
         android:hint="@string/edit_message"
         android:inputType="textPersonName"
@@ -39,6 +41,7 @@
         android:layout_marginTop="16dp"
         android:text="BT Status"
         android:textAlignment="textStart"
+        android:textColor="@color/white"
         android:textIsSelectable="false"
         app:layout_constraintStart_toStartOf="@+id/editTextTextPersonName"
         app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName" />
@@ -47,30 +50,36 @@
         android:id="@+id/btUp"
         android:layout_width="180dp"
         android:layout_height="180dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/button_custom"
         android:text="@string/btup_face"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/messageTextView" />
+        android:textSize="34sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/btDown" />
 
     <Button
         android:id="@+id/btDown"
         android:layout_width="180dp"
         android:layout_height="180dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/button_custom"
         android:text="@string/btdown_face"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/btUp" />
+        android:textSize="34sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/messageTextView" />
 
     <Button
         android:id="@+id/btRollUp"
         android:layout_width="180dp"
         android:layout_height="180dp"
-        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/button_custom"
         android:text="@string/btrup_face"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btUp" />
+        android:textSize="34sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btDown" />
 
     <TextView
         android:id="@+id/messageTextView"
@@ -78,6 +87,7 @@
         android:layout_height="42dp"
         android:layout_marginTop="16dp"
         android:text="Message from BT"
+        android:textColor="@color/white"
         app:layout_constraintStart_toStartOf="@+id/editTextTextPersonName"
         app:layout_constraintTop_toBottomOf="@+id/btStatusTextView" />
 
@@ -85,10 +95,13 @@
         android:id="@+id/btRollDown"
         android:layout_width="180dp"
         android:layout_height="180dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/button_custom"
         android:text="@string/btrdown_face"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/btRollUp" />
+        android:textSize="34sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btUp" />
 
     <TextView
         android:id="@+id/tvCommand"
@@ -97,6 +110,7 @@
         android:layout_marginStart="112dp"
         android:layout_marginTop="660dp"
         android:text="Command"
+        android:textColor="@color/white"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </android.support.constraint.ConstraintLayout>

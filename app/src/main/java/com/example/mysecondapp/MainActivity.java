@@ -1,11 +1,16 @@
 package com.example.mysecondapp;
 
+import static com.example.mysecondapp.R.color.button;
+import static com.example.mysecondapp.R.drawable.button_custom;
+import static com.example.mysecondapp.R.drawable.button_deny;
+
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -65,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements
     TextView btStatusTextView;
     TextView messageTextView;
     TextView tvCommand;
+    Button btUp, btDown, btRollUp, btRollDown;
 
     BTClientThread btClientThread;
 
@@ -100,8 +106,10 @@ public class MainActivity extends AppCompatActivity implements
         btStatusTextView = (TextView) findViewById(R.id.btStatusTextView);
         messageTextView = (TextView) findViewById(R.id.messageTextView);
         tvCommand = (TextView)  findViewById(R.id.tvCommand);
-
-
+        btUp = (Button) findViewById(R.id.btUp);
+        btDown = (Button) findViewById(R.id.btDown);
+        btRollUp = (Button) findViewById(R.id.btRollUp);
+        btRollDown = (Button) findViewById(R.id.btRollDown);
 
         findViewById(R.id.btUp).setOnTouchListener(this);
         findViewById(R.id.btDown).setOnTouchListener(this);
@@ -358,7 +366,9 @@ public class MainActivity extends AppCompatActivity implements
         if(act == MotionEvent.ACTION_DOWN
                 || act == MotionEvent.ACTION_UP){
             Log.d(TAG, "buttonUpDown");
-            buttonUpDown((Button) v, act);
+            if(v.isClickable()) {
+                buttonUpDown((Button) v, act);
+            }
         } else {
             Log.d(TAG, event.toString());
         }
@@ -370,11 +380,13 @@ public class MainActivity extends AppCompatActivity implements
             case R.id.btUp:
                 Log.d(TAG, "btUp");
                 if(act == MotionEvent.ACTION_DOWN){
+                    customButton(btDown, false);
                     if(mLoaderRemote != LOADER_UP){
                         mLoaderStatus = LOADER_UP;
                     }
                     setBtCommand(R_STATUS_U0);
                 } else if(act == MotionEvent.ACTION_UP){
+                    customButton(btDown, true);
                     if(mLoaderRemote != LOADER_NONE){
                         mLoaderStatus = LOADER_NONE;
                     }
@@ -383,11 +395,13 @@ public class MainActivity extends AppCompatActivity implements
                 break;
             case R.id.btDown:
                 if(act == MotionEvent.ACTION_DOWN){
+                    customButton(btUp, false);
                     if(mLoaderRemote != LOADER_DOWN){
                         mLoaderStatus = LOADER_DOWN;
                     }
                     setBtCommand(R_STATUS_D0);
                 } else if (act == MotionEvent.ACTION_UP){
+                    customButton(btUp, true);
                     if(mLoaderRemote != LOADER_NONE){
                         mLoaderStatus = LOADER_NONE;
                     }
@@ -396,11 +410,13 @@ public class MainActivity extends AppCompatActivity implements
                 break;
             case R.id.btRollUp:
                 if(act == MotionEvent.ACTION_DOWN){
+                    customButton(btRollDown, false);
                     if(mWinchRemote != WINCH_UP){
                         mWinchStatus = WINCH_UP;
                     }
                     setBtCommand(R_STATUS_0U);
                 } else if (act == MotionEvent.ACTION_UP){
+                    customButton(btRollDown, true);
                     if(mWinchRemote != WINCH_NONE){
                         mWinchStatus = WINCH_NONE;
                     }
@@ -409,11 +425,13 @@ public class MainActivity extends AppCompatActivity implements
                 break;
             case R.id.btRollDown:
                 if(act == MotionEvent.ACTION_DOWN){
+                    customButton(btRollUp, false);
                     if(mWinchRemote != WINCH_DOWN){
                         mWinchStatus = WINCH_DOWN;
                     }
                     setBtCommand(R_STATUS_0D);
                 } else if (act == MotionEvent.ACTION_UP){
+                    customButton(btRollUp, true);
                     if(mWinchRemote != WINCH_NONE){
                         mWinchStatus = WINCH_NONE;
                     }
@@ -423,8 +441,13 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    private void setLoaderCommand(int i){
-
+    private void customButton(Button b, boolean status){
+        b.setClickable(status);
+        if(status){
+            b.setBackground(ContextCompat.getDrawable(this, button_custom));
+        } else {
+            b.setBackground(ContextCompat.getDrawable(this, button_deny));
+        }
     }
 
     private void setBtCommand(int i){
