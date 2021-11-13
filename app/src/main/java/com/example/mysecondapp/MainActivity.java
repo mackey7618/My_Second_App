@@ -204,9 +204,9 @@ public class MainActivity extends AppCompatActivity implements
                         break;
                     }
                     try {
-                        Log.d(TAG, "before connect");
+                        //Log.d(TAG, "before connect");
                         bluetoothSocket.connect();
-                        Log.d(TAG, "after connect");
+                        //Log.d(TAG, "after connect");
                         handler.obtainMessage(
                                 Constants.MESSAGE_BT,
                                 "CONNECTED " + bluetoothDevice.getName())
@@ -246,7 +246,7 @@ public class MainActivity extends AppCompatActivity implements
                             ).sendToTarget();
 
                             // Update again in a few seconds
-                            Thread.sleep(100);
+                            Thread.sleep(20);
                         }
                     } catch (IOException e) {
                         // connect will throw IOException immediately
@@ -285,30 +285,37 @@ public class MainActivity extends AppCompatActivity implements
             try{
                 switch(com){
                     case LOADER_NONE:
+                        Log.d(TAG, "56");
                         outputStream.write(COMMAND_5);
                         outputStream.write(COMMAND_6);
                         break;
                     case LOADER_UP:
+                        Log.d(TAG, "16");
                         outputStream.write(COMMAND_1);
                         outputStream.write(COMMAND_6);
                         break;
                     case LOADER_DOWN:
+                        Log.d(TAG, "52");
                         outputStream.write(COMMAND_5);
                         outputStream.write(COMMAND_2);
                         break;
                     case WINCH_NONE:
+                        Log.d(TAG, "78");
                         outputStream.write(COMMAND_7);
                         outputStream.write(COMMAND_8);
                         break;
                     case WINCH_UP:
+                        Log.d(TAG, "38");
                         outputStream.write(COMMAND_3);
                         outputStream.write(COMMAND_8);
                         break;
                     case WINCH_DOWN:
+                        Log.d(TAG, "74");
                         outputStream.write(COMMAND_7);
                         outputStream.write(COMMAND_4);
                         break;
                     default:
+                        Log.d(TAG, "0");
                         outputStream.write(COMMAND_0);
                 }
             }catch(IOException e){
@@ -365,20 +372,20 @@ public class MainActivity extends AppCompatActivity implements
         int act = event.getActionMasked();
         if(act == MotionEvent.ACTION_DOWN
                 || act == MotionEvent.ACTION_UP){
-            Log.d(TAG, "buttonUpDown");
             if(v.isClickable()) {
                 buttonUpDown((Button) v, act);
             }
         } else {
-            Log.d(TAG, event.toString());
+            //Log.d(TAG, event.toString());
         }
         return false;
     }
 
     private void buttonUpDown(Button b, int act){
+        //Log.d(TAG, "buttonUpDown");
         switch(b.getId()){
             case R.id.btUp:
-                Log.d(TAG, "btUp");
+                //Log.d(TAG, "btUp");
                 if(act == MotionEvent.ACTION_DOWN){
                     customButton(btDown, false);
                     if(mLoaderRemote != LOADER_UP){
@@ -394,6 +401,7 @@ public class MainActivity extends AppCompatActivity implements
                 }
                 break;
             case R.id.btDown:
+                //Log.d(TAG, "btDown");
                 if(act == MotionEvent.ACTION_DOWN){
                     customButton(btUp, false);
                     if(mLoaderRemote != LOADER_DOWN){
@@ -409,6 +417,7 @@ public class MainActivity extends AppCompatActivity implements
                 }
                 break;
             case R.id.btRollUp:
+                //Log.d(TAG, "btRollUp");
                 if(act == MotionEvent.ACTION_DOWN){
                     customButton(btRollDown, false);
                     if(mWinchRemote != WINCH_UP){
@@ -424,6 +433,7 @@ public class MainActivity extends AppCompatActivity implements
                 }
                 break;
             case R.id.btRollDown:
+                //Log.d(TAG, "btRollDown");
                 if(act == MotionEvent.ACTION_DOWN){
                     customButton(btRollUp, false);
                     if(mWinchRemote != WINCH_DOWN){
