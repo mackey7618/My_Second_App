@@ -103,13 +103,13 @@ public class MainActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_main);
 
         // Find Views
-        btStatusTextView = (TextView) findViewById(R.id.btStatusTextView);
-        messageTextView = (TextView) findViewById(R.id.messageTextView);
-        tvCommand = (TextView)  findViewById(R.id.tvCommand);
-        btUp = (Button) findViewById(R.id.btUp);
-        btDown = (Button) findViewById(R.id.btDown);
-        btRollUp = (Button) findViewById(R.id.btRollUp);
-        btRollDown = (Button) findViewById(R.id.btRollDown);
+        btStatusTextView = findViewById(R.id.btStatusTextView);
+        messageTextView = findViewById(R.id.messageTextView);
+        tvCommand = findViewById(R.id.tvCommand);
+        btUp = findViewById(R.id.btUp);
+        btDown = findViewById(R.id.btDown);
+        btRollUp = findViewById(R.id.btRollUp);
+        btRollDown = findViewById(R.id.btRollDown);
 
         findViewById(R.id.btUp).setOnTouchListener(this);
         findViewById(R.id.btDown).setOnTouchListener(this);
